@@ -201,7 +201,7 @@
     </div>
     <div class="qr-card">
       <h3>Partager l'app</h3>
-      <img id="qr-image" src="qrcode.png" alt="QR code NutriWeek" width="180" height="180" style="border-radius:8px;background:#fffdf8;padding:4px;">
+      <img id="qr-image" src="qrcode.png" alt="QR code NutriWeek" width="180" height="180" style="border-radius:8px;background:#fffdf8;padding:4px;" onerror="this.style.display='none'">
       <div class="qr-url" id="qr-url"></div>
       <button class="copy-btn" onclick="copyUrl()">📋 Copier le lien</button>
     </div>
@@ -330,6 +330,10 @@ function goHome() { goTo('home'); updateBadges(); }
 // QR CODE
 function generateQR() {
   document.getElementById('qr-url').textContent = APP_URL;
+  const qrImg = document.getElementById('qr-image');
+  if (!qrImg.complete || (qrImg.naturalWidth === 0 && qrImg.naturalHeight === 0)) {
+    qrImg.style.display = 'none';
+  }
 }
 function copyUrl() {
   navigator.clipboard.writeText(APP_URL).then(() => {

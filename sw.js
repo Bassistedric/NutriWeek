@@ -7,7 +7,6 @@ const ASSETS = [
   `${BASE_PATH}favicon.ico`,
   `${BASE_PATH}favicon-16.png`,
   `${BASE_PATH}favicon-32.png`,
-  `${BASE_PATH}qrcode.png`,
   `${BASE_PATH}icon-180.png`,
   `${BASE_PATH}icon-192.png`,
   `${BASE_PATH}icon-512.png`,
