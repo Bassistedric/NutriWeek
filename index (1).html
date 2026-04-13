@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#DB5828">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NutriWeek">
+<meta name="description" content="NutriWeek — Suivi régime hyperprotéiné : courses, menu, préparations et inventaire familial">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<title>NutriWeek</title>
+<style>
+  :root {
+    --orange: #DB5828;
+    --orange-light: #FAECE7;
+    --orange-dark: #993C1D;
+    --green: #3d7a4f;
+    --green-light: #c8e6c9;
+    --bg: #f5f0e8;
+    --card: #fffdf8;
+    --text: #1a1a1a;
+    --muted: #7a7060;
+    --border: #e0d8cc;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+    --radius: 12px;
+    --safe-top: env(safe-area-inset-top);
+    --safe-bottom: env(safe-area-inset-bottom);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overflow: hidden; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; }
+
+  header {
+    background: var(--orange);
+    color: white;
+    padding: calc(14px + var(--safe-top)) 20px 14px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  header img { width: 34px; height: 34px; border-radius: 8px; }
+  header h1 { font-family: 'DM Serif Display', serif; font-size: 1.3rem; letter-spacing: 0.01em; }
+  header p { font-size: 0.7rem; color: rgba(255,255,255,0.7); font-weight: 300; margin-top: 1px; }
+
+  .tabs {
+    display: flex;
+    background: #1a1a1a;
+    border-bottom: 1px solid #2a2a2a;
+    flex-shrink: 0;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    flex: 1;
+    min-width: 70px;
+    background: none;
+    border: none;
+    color: #5a5040;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 11px 6px 9px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .tab-btn.active { color: #f5f0e8; border-bottom-color: var(--orange); }
+
+  .scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding-bottom: calc(16px + var(--safe-bottom)); }
+
+  .panel { display: none; padding: 18px 16px; max-width: 640px; margin: 0 auto; width: 100%; }
+  .panel.active { display: block; }
+
+  /* SECTION TITLE */
+  .section-title { font-family: 'DM Serif Display', serif; font-size: 1.15rem; font-weight: 400; margin-bottom: 4px; }
+  .section-sub { font-size: 0.72rem; color: var(--muted); margin-bottom: 16px; }
+
+  /* DAY SELECTOR */
+  .day-selector { display: flex; align-items: center; gap: 10px; background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 18px; }
+  .day-selector label { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+  .day-selector select { font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 500; background: transparent; border: none; color: var(--text); cursor: pointer; flex: 1; outline: none; }
+
+  /* MEAL CARDS */
+  .meal-grid { display: grid; gap: 13px; }
+  .meal-card { background: var(--card); border-radius: var(--radius); border: 1.5px solid var(--border); overflow: hidden; box-shadow: var(--shadow); }
+  .meal-header { background: #1a1a1a; color: #f5f0e8; padding: 9px 16px; display: flex; align-items: center; gap: 8px; }
+  .meal-header h3 { font-family: 'DM Serif Display', serif; font-size: 0.95rem; font-weight: 400; }
+  .meal-body { padding: 11px 16px; }
+  .meal-body .item { display: flex; align-items: flex-start; gap: 8px; padding: 3px 0; font-size: 0.87rem; line-height: 1.5; }
+  .meal-body .item::before { content: '·'; color: var(--orange); font-size: 1.3rem; line-height: 1.2; flex-shrink: 0; }
+  .meal-empty { font-size: 0.85rem; color: var(--muted); font-style: italic; padding: 4px 0; }
+
+  /* PREP */
+  .prep-list { display: flex; flex-direction: column; gap: 9px; }
+  .prep-task { background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 12px 15px; font-size: 0.87rem; line-height: 1.5; box-shadow: var(--shadow); display: flex; align-items: flex-start; gap: 10px; }
+  .prep-task .icon { flex-shrink: 0; font-size: 1rem; margin-top: 1px; }
+  .no-tasks { text-align: center; padding: 48px 24px; color: var(--muted); font-size: 0.9rem; }
+  .no-tasks .big { font-size: 2rem; display: block; margin-bottom: 8px; }
+
+  /* COURSES SEMAINE */
+  .courses-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .reset-btn { background: none; border: 1.5px solid var(--border); border-radius: 8px; padding: 6px 12px; font-family: 'DM Sans', sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+  .reset-btn:active { border-color: var(--orange); color: var(--orange); }
+  .progress-label { font-size: 0.72rem; color: var(--muted); display: flex; justify-content: space-between; margin-bottom: 5px; }
+  .progress-bar-wrap { background: var(--border); border-radius: 99px; height: 5px; margin-bottom: 18px; overflow: hidden; }
+  .progress-bar { height: 100%; background: var(--green); border-radius: 99px; transition: width 0.35s ease; }
+  .cat-block { margin-bottom: 16px; }
+  .cat-title { font-size: 0.67rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 0 0 6px 9px; border-left: 3px solid var(--orange); margin-bottom: 7px; }
+  .item-list { display: flex; flex-direction: column; gap: 5px; }
+  .grocery-item { display: flex; align-items: center; gap: 11px; background: var(--card); border: 1.5px solid var(--border); border-radius: 10px; padding: 11px 13px; cursor: pointer; transition: background 0.22s, border-color 0.22s; box-shadow: var(--shadow); user-select: none; }
+  .grocery-item.checked { background: var(--green-light); border-color: var(--green); }
+  .grocery-item.checked .item-name { text-decoration: line-through; color: var(--muted); }
+  .checkbox { width: 21px; height: 21px; border-radius: 6px; border: 2px solid var(--border); background: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; font-size: 12px; font-weight: 700; color: transparent; }
+  .grocery-item.checked .checkbox { background: var(--green); border-color: var(--green); color: white; }
+  .item-name { font-size: 0.87rem; transition: all 0.2s; }
+
+  /* INVENTAIRE */
+  .inv-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .count-badge { font-size: 0.72rem; color: var(--muted); background: var(--card); border: 1.5px solid var(--border); border-radius: 99px; padding: 3px 10px; }
+  .sync-bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--card); border-radius: var(--radius); margin-bottom: 14px; font-size: 0.75rem; color: var(--muted); border: 1.5px solid var(--border); }
+  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+  .sync-dot.syncing { background: #EF9F27; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .search-wrap { position: relative; margin-bottom: 16px; }
+  .search-wrap input { width: 100%; padding: 9px 12px 9px 36px; font-size: 0.87rem; border: 1.5px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--text); font-family: 'DM Sans', sans-serif; outline: none; }
+  .search-wrap input:focus { border-color: var(--orange); }
+  .search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); font-size: 14px; color: var(--muted); pointer-events: none; }
+  .inv-cat-block { margin-bottom: 16px; }
+  .inv-cat-title { font-size: 0.67rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 0 0 6px 9px; border-left: 3px solid var(--orange); margin-bottom: 7px; display: flex; align-items: center; gap: 6px; }
+  .inv-cat-count { background: var(--orange-light); color: var(--orange-dark); border-radius: 99px; padding: 1px 7px; font-size: 10px; font-weight: 600; letter-spacing: 0; text-transform: none; }
+  .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 5px; }
+  .item-chip { display: flex; align-items: center; gap: 7px; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 9px; background: var(--card); cursor: pointer; transition: all 0.15s; user-select: none; box-shadow: var(--shadow); }
+  .item-chip:active { background: var(--bg); }
+  .item-chip.missing { border-color: var(--orange); background: var(--orange-light); }
+  .item-chip.missing .chip-label { color: var(--orange-dark); font-weight: 500; }
+  .item-chip.missing .chip-dot { background: var(--orange); border-color: var(--orange); }
+  .chip-dot { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--border); flex-shrink: 0; transition: all 0.15s; }
+  .chip-label { font-size: 0.78rem; color: var(--text); line-height: 1.3; }
+
+  /* LISTE INVENTAIRE */
+  .liste-tab { display: flex; gap: 0; margin-bottom: 18px; background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .liste-sub-tab { flex: 1; background: none; border: none; padding: 9px 8px; font-family: 'DM Sans', sans-serif; font-size: 0.75rem; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.2s; }
+  .liste-sub-tab.active { background: var(--orange); color: white; }
+  .liste-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .inv-progress-wrap { background: var(--border); border-radius: 99px; height: 5px; margin-bottom: 16px; overflow: hidden; }
+  .inv-progress-fill { height: 100%; background: var(--green); border-radius: 99px; transition: width 0.35s ease; }
+  .liste-item { display: flex; align-items: center; gap: 11px; padding: 11px 13px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--card); margin-bottom: 5px; cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow); }
+  .liste-item.done { background: var(--green-light); border-color: var(--green); }
+  .liste-item.done .liste-label { text-decoration: line-through; color: var(--muted); }
+  .liste-item.done .check-box { background: var(--green); border-color: var(--green); color: white; }
+  .check-box { width: 21px; height: 21px; border-radius: 6px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: transparent; flex-shrink: 0; transition: all 0.2s; background: white; }
+  .liste-label { font-size: 0.87rem; color: var(--text); flex: 1; }
+  .liste-cat-section { margin-bottom: 14px; }
+  .liste-cat-header { font-size: 0.67rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; padding-left: 2px; }
+  .liste-empty { text-align: center; padding: 48px 24px; color: var(--muted); }
+  .liste-empty .big { font-size: 2rem; display: block; margin-bottom: 8px; }
+  .btn-courses-done { background: none; border: 1.5px solid var(--border); border-radius: 8px; padding: 6px 12px; font-family: 'DM Sans', sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+  .btn-courses-done:active { border-color: var(--orange); color: var(--orange); }
+
+  /* SHARE */
+  .share-strip { background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; font-size: 0.78rem; color: var(--text); box-shadow: var(--shadow); }
+  .share-strip span.url { font-size: 0.7rem; color: var(--muted); word-break: break-all; display: block; margin-top: 2px; }
+  .share-btn { margin-left: auto; background: var(--orange); color: white; border: none; border-radius: 8px; padding: 7px 13px; font-family: 'DM Sans', sans-serif; font-size: 0.72rem; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+
+  /* INSTALL */
+  #install-banner { display: none; background: #1a1a1a; color: #f5f0e8; padding: 11px 16px; font-size: 0.8rem; align-items: center; gap: 10px; flex-shrink: 0; }
+  #install-banner.visible { display: flex; }
+  .install-btn { background: var(--orange); color: white; border: none; border-radius: 8px; padding: 7px 14px; font-family: 'DM Sans', sans-serif; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+  .dismiss-btn { background: none; border: none; color: #5a5040; font-size: 1.1rem; cursor: pointer; padding: 0 4px; }
+
+  .empty-state { text-align: center; padding: 3rem 1rem; color: var(--muted); font-size: 0.87rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="icon-96.png" alt="NutriWeek">
+  <div>
+    <h1>NutriWeek</h1>
+    <p id="week-label">Semaine 16</p>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('courses', this)">🛒 Courses</button>
+  <button class="tab-btn" onclick="showTab('menu', this)">🍽 Menu</button>
+  <button class="tab-btn" onclick="showTab('prep', this)">👨‍🍳 Prépa</button>
+  <button class="tab-btn" onclick="showTab('inventaire', this)">📦 Inventaire</button>
+</div>
+
+<div id="install-banner">
+  <span>📲 Installer NutriWeek sur cet appareil</span>
+  <button class="install-btn" onclick="installApp()">Installer</button>
+  <button class="dismiss-btn" onclick="dismissInstall()">✕</button>
+</div>
+
+<div class="scroll-area">
+
+  <!-- ======= COURSES SEMAINE ======= -->
+  <div id="tab-courses" class="panel active">
+    <div class="share-strip">
+      <div style="flex:1">
+        <strong style="font-size:0.82rem;">Partager l'app</strong>
+        <span class="url" id="share-url">—</span>
+      </div>
+      <button class="share-btn" onclick="shareApp()">Partager</button>
+    </div>
+    <div class="courses-top">
+      <div>
+        <div class="section-title">Liste de la semaine</div>
+        <div class="section-sub">Semaine 16 — régime hyperprotéiné</div>
+      </div>
+      <button class="reset-btn" onclick="resetCourses()">↺ Reset</button>
+    </div>
+    <div class="progress-label">
+      <span id="progress-text">0 article pris</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+    <div id="courses-list"></div>
+  </div>
+
+  <!-- ======= MENU ======= -->
+  <div id="tab-menu" class="panel">
+    <div class="day-selector">
+      <label>Jour</label>
+      <select id="menu-day" onchange="renderMenu()"></select>
+    </div>
+    <div id="menu-content" class="meal-grid"></div>
+  </div>
+
+  <!-- ======= PREP ======= -->
+  <div id="tab-prep" class="panel">
+    <div class="day-selector">
+      <label>Jour</label>
+      <select id="prep-day" onchange="renderPrep()"></select>
+    </div>
+    <div id="prep-content" class="prep-list"></div>
+  </div>
+
+  <!-- ======= INVENTAIRE ======= -->
+  <div id="tab-inventaire" class="panel">
+    <div class="liste-tab">
+      <button class="liste-sub-tab active" onclick="switchInvTab('manque', this)">Ce qui manque</button>
+      <button class="liste-sub-tab" onclick="switchInvTab('liste', this)">
+        Liste courses <span id="inv-badge" style="display:none; background:white; color:var(--orange); border-radius:99px; padding:0 6px; font-size:10px; margin-left:3px;"></span>
+      </button>
+    </div>
+
+    <!-- Sous-onglet Manque -->
+    <div id="inv-manque">
+      <div class="inv-top">
+        <span class="count-badge" id="inv-missing-count">0 manquant</span>
+        <div class="sync-bar" style="margin:0; border:none; background:none; padding:0; gap:6px;">
+          <div class="sync-dot" id="sync-dot"></div>
+          <span id="sync-label" style="font-size:0.72rem; color:var(--muted);">Synchronisé</span>
+        </div>
+      </div>
+      <div class="search-wrap" style="margin-top:10px;">
+        <span class="search-icon">⌕</span>
+        <input type="text" id="inv-search" placeholder="Rechercher un article..." oninput="filterInv()">
+      </div>
+      <div id="inv-content"></div>
+    </div>
+
+    <!-- Sous-onglet Liste -->
+    <div id="inv-liste" style="display:none;">
+      <div class="liste-top">
+        <div>
+          <div style="font-size:0.87rem; font-weight:500; color:var(--text);">À acheter</div>
+          <div style="font-size:0.72rem; color:var(--muted);" id="inv-progress-label">0 / 0 articles</div>
+        </div>
+        <button class="btn-courses-done" onclick="coursesTerminees()">Courses faites ✓</button>
+      </div>
+      <div class="inv-progress-wrap"><div class="inv-progress-fill" id="inv-progress-fill" style="width:0%"></div></div>
+      <div id="inv-liste-content"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ===================== DATA SEMAINE =====================
+const WEEK_NUM = 16;
+
+const COURSES_SEMAINE = {
+  "Fruits": ["8 kiwis"],
+  "Légumes": ["Carottes (8 portions)","Tomates pour four (4p)","Tomates crudités","1 concombre","Olives","Germes","Salade","2 poivrons rouges","2 avocats"],
+  "Laitage": ["1 fromage de chèvre","4 yaourts grecs","4 yaourts protéinés","12 œufs","Feta"],
+  "Viandes": ["Blanc de poulet (8p)","Dinde (8p)","4 steaks"],
+  "Conserves": ["1 paquet d'amandes","Maïs en boîte","Haricots rouges","Tomates concassées"],
+  "Surgelés": ["Haricots verts","Poisson blanc (4p)","Scampis (4p)"]
+};
+
+const DAYS = ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
+
+const MENU = {
+  "Lundi": {
+    "🌅 Déjeuner": ["Yaourt grec","Flocons d'avoine, noix et graines de chia","1 kiwi"],
+    "☀️ Dîner": ["Omelette au fromage de chèvre et aux brocolis","Salade de crudités"],
+    "🌙 Souper": ["Blanc de poulet grillé","Carottes","Quinoa","Huile d'olive"]
+  },
+  "Mardi": {
+    "🌅 Déjeuner": ["Yaourt grec","Flocons d'avoine, noix et graines de chia","1 kiwi"],
+    "☀️ Dîner": ["Boulettes de dinde","Brocolis aux amandes"],
+    "🌙 Souper": ["Steak","Haricots verts","PDT vapeur"]
+  },
+  "Mercredi": {
+    "🌅 Déjeuner": ["Saumon fumé","Tranche de pain complet","Oignons rouges, câpres"],
+    "☀️ Dîner": ["Salade de pâtes au thon","Tomates, olives, fêta et concombre"],
+    "🌙 Souper": ["Blanc de poulet grillé","Carottes","Quinoa","Huile d'olive"]
+  },
+  "Jeudi": {
+    "🌅 Déjeuner": ["2 œufs brouillés","1 yaourt protéiné","1 fruit"],
+    "☀️ Dîner": ["Chili sin carne et riz complet"],
+    "🌙 Souper": ["Poisson blanc","Haricots verts","Tomates au four à l'ail"]
+  },
+  "Vendredi": {
+    "🌅 Déjeuner": ["2 œufs brouillés","1 yaourt protéiné","1 fruit"],
+    "☀️ Dîner": ["Chili sin carne et riz complet"],
+    "🌙 Souper": ["Wok de légumes aux crevettes"]
+  },
+  "Samedi": {
+    "🌅 Déjeuner": ["—"],
+    "☀️ Dîner": ["Poulet rôti","Carottes et PDT au four"],
+    "🌙 Souper": ["—"]
+  },
+  "Dimanche": {
+    "🌅 Déjeuner": ["—"],
+    "☀️ Dîner": ["—"],
+    "🌙 Souper": ["—"]
+  }
+};
+
+const PREP = {
+  "Dimanche": ["Cuire les brocolis (6 portions)","Cuire les carottes (8 portions)","Précuire le poulet (8 portions)","Cuire le quinoa (8 portions)","Préparer la salade de crudités + omelette si à emporter lundi","Cuisiner le chili sin carne et le mettre au congélateur","Préparer les boulettes de dinde + en surgeler une partie pour semaine prochaine"],
+  "Lundi": ["Réchauffer le souper","Assembler le plat pour mardi midi"],
+  "Mardi": ["Cuire les PDT vapeur, cuire le steak et réchauffer les haricots","Cuire les pâtes","Dresser le plat pour mercredi midi"],
+  "Mercredi": ["Réchauffer le souper","Cuire le riz","Décongeler le chili sin carne"],
+  "Jeudi": ["Cuire le poisson, réchauffer les haricots verts et cuire les tomates au four"],
+  "Vendredi": ["Cuisiner le wok de légumes (légumes asiatiques) aux crevettes"],
+  "Samedi": [],
+  "Dimanche_free": []
+};
+
+// ===================== DATA INVENTAIRE =====================
+const INVENTAIRE = {
+  "Epicerie sèche": ["Flocons d'avoine","Riz complet","Pâtes","Quinoa","Lentilles","Haricots rouges","Pois chiches","Maïs en boîte","Tomates concassées","Bouillon de légumes","Farine","Sucre","Café","Thé","Chocolat noir","Biscuits","Céréales","Confiture","Miel","Pain de mie","Biscottes"],
+  "Epices & Condiments": ["Sel","Poivre","Cumin","Paprika","Curcuma","Cannelle","Herbes de Provence","Curry","Piment","Noix de muscade","Ail en poudre","Origan","Huile d'olive","Huile de tournesol","Vinaigre balsamique","Vinaigre blanc","Sauce soja","Moutarde","Ketchup","Mayonnaise","Cornichons","Câpres","Olives"],
+  "Frigo": ["Lait","Beurre","Crème fraîche","Yaourt grec","Yaourt protéiné","Fromage de chèvre","Feta","Emmental","Parmesan","Oeufs","Jus d'orange","Jus de pomme","Hummus","Saumon fumé","Jambon","Tofu"],
+  "Fruits & Légumes": ["Bananes","Pommes","Kiwis","Oranges","Citrons","Fraises","Tomates","Carottes","Courgettes","Brocolis","Epinards","Salade","Concombre","Poivrons","Avocats","Oignons","Ail","Champignons","Pommes de terre","Patates douces"],
+  "Viandes & Poissons": ["Blanc de poulet","Cuisses de poulet","Poulet entier","Haché de bœuf","Filets de dinde","Steaks","Poisson blanc","Saumon","Crevettes","Scampis","Thon en boîte","Lardons","Saucisses"],
+  "Surgelés": ["Haricots verts","Petits pois","Epinards surgelés","Brocolis surgelés","Poisson blanc surgelé","Crevettes surgelées","Légumes wok"],
+  "Boissons": ["Eau plate","Eau gazeuse","Jus de fruits","Soda","Bière","Vin rouge","Vin blanc","Boisson protéinée"],
+  "Maison": ["Papier WC","Essuie-tout","Sacs poubelle","Papier cuisson","Papier aluminium","Film plastique","Sacs congélation","Liquide vaisselle","Tablettes lave-vaisselle","Lessive","Adoucissant","Nettoyant multi-surfaces","Nettoyant WC","Déboucheur","Éponges"],
+  "Soins & Hygiène": ["Shampoing","Après-shampoing","Gel douche","Savon","Déodorant","Dentifrice","Brosse à dents","Brossettes interdentaires","Rasoir","Crème hydratante","Coton","Mouchoirs"],
+  "École & Enfants": ["Biscuits école","Compotes gourde","Barres céréales","Crackers","Jus de fruit petit format","Fromage à tartiner individuel","Crayons","Colle","Feuilles","Cahiers","Stylos","Surligneurs"]
+};
+
+// ===================== STATE =====================
+const KEY_COURSES = 'nutriweek_courses_s16';
+const KEY_INV     = 'nutriweek_inv_v1';
+const KEY_INV_DONE = 'nutriweek_inv_done_v1';
+
+let coursesChecked = {};
+let invMissing = {};
+let invDone = {};
+let invFilter = '';
+
+function loadAll() {
+  try { coursesChecked = JSON.parse(localStorage.getItem(KEY_COURSES) || '{}'); } catch { coursesChecked = {}; }
+  try { invMissing = JSON.parse(localStorage.getItem(KEY_INV) || '{}'); } catch { invMissing = {}; }
+  try { invDone = JSON.parse(localStorage.getItem(KEY_INV_DONE) || '{}'); } catch { invDone = {}; }
+}
+
+function saveAll() {
+  localStorage.setItem(KEY_COURSES, JSON.stringify(coursesChecked));
+  localStorage.setItem(KEY_INV, JSON.stringify(invMissing));
+  localStorage.setItem(KEY_INV_DONE, JSON.stringify(invDone));
+}
+
+// ===================== NAV =====================
+function showTab(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+function switchInvTab(name, btn) {
+  document.getElementById('inv-manque').style.display = name === 'manque' ? 'block' : 'none';
+  document.getElementById('inv-liste').style.display = name === 'liste' ? 'block' : 'none';
+  document.querySelectorAll('.liste-sub-tab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (name === 'liste') renderInvListe();
+}
+
+// ===================== UTILS =====================
+function getTodayDay() {
+  return ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"][new Date().getDay()];
+}
+
+function setWeekLabel() {
+  const now = new Date();
+  const day = now.getDay();
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(now); monday.setDate(diff);
+  const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
+  const fmt = d => d.toLocaleDateString('fr-BE', { day: 'numeric', month: 'long' });
+  document.getElementById('week-label').textContent = `Semaine ${WEEK_NUM} — du ${fmt(monday)} au ${fmt(sunday)}`;
+}
+
+// ===================== COURSES SEMAINE =====================
+function toggleCourse(id) {
+  coursesChecked[id] = !coursesChecked[id];
+  saveAll(); renderCourses();
+}
+
+function resetCourses() {
+  if (confirm('Réinitialiser la liste de la semaine ?')) {
+    coursesChecked = {}; saveAll(); renderCourses();
+  }
+}
+
+function renderCourses() {
+  const container = document.getElementById('courses-list');
+  container.innerHTML = '';
+  let total = 0, done = 0;
+  for (const [cat, items] of Object.entries(COURSES_SEMAINE)) {
+    const block = document.createElement('div');
+    block.className = 'cat-block';
+    const list = document.createElement('div');
+    list.className = 'item-list';
+    block.innerHTML = `<div class="cat-title">${cat}</div>`;
+    block.appendChild(list);
+    container.appendChild(block);
+    items.forEach(item => {
+      const id = `${cat}::${item}`;
+      const isChecked = !!coursesChecked[id];
+      total++; if (isChecked) done++;
+      const el = document.createElement('div');
+      el.className = 'grocery-item' + (isChecked ? ' checked' : '');
+      el.onclick = () => toggleCourse(id);
+      el.innerHTML = `<div class="checkbox">✓</div><span class="item-name">${item}</span>`;
+      list.appendChild(el);
+    });
+  }
+  const pct = total ? Math.round(done / total * 100) : 0;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `${done} / ${total} articles pris`;
+  document.getElementById('progress-pct').textContent = pct + '%';
+}
+
+// ===================== MENU =====================
+function renderMenu() {
+  const day = document.getElementById('menu-day').value;
+  const content = document.getElementById('menu-content');
+  const meals = MENU[day] || {};
+  content.innerHTML = '';
+  for (const [moment, items] of Object.entries(meals)) {
+    const parts = moment.split(' ');
+    const validItems = items.filter(i => i && i !== '—');
+    const card = document.createElement('div');
+    card.className = 'meal-card';
+    card.innerHTML = `<div class="meal-header"><span>${parts[0]}</span><h3>${parts.slice(1).join(' ')}</h3></div>
+      <div class="meal-body">${validItems.length ? validItems.map(i => `<div class="item">${i}</div>`).join('') : '<div class="meal-empty">Pas de repas planifié</div>'}</div>`;
+    content.appendChild(card);
+  }
+}
+
+function initMenuSelect() {
+  const sel = document.getElementById('menu-day');
+  const today = getTodayDay();
+  DAYS.forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d; if (d === today) o.selected = true; sel.appendChild(o); });
+  renderMenu();
+}
+
+// ===================== PREP =====================
+function renderPrep() {
+  const day = document.getElementById('prep-day').value;
+  const content = document.getElementById('prep-content');
+  const tasks = PREP[day] || [];
+  content.innerHTML = '';
+  if (!tasks.length) { content.innerHTML = '<div class="no-tasks"><span class="big">😌</span>Rien à préparer ce jour-là !</div>'; return; }
+  tasks.forEach(task => {
+    const el = document.createElement('div');
+    el.className = 'prep-task';
+    el.innerHTML = `<span class="icon">🔪</span><span>${task}</span>`;
+    content.appendChild(el);
+  });
+}
+
+function initPrepSelect() {
+  const sel = document.getElementById('prep-day');
+  const today = getTodayDay();
+  DAYS.forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d; if (d === today) o.selected = true; sel.appendChild(o); });
+  renderPrep();
+}
+
+// ===================== INVENTAIRE =====================
+function setSyncing(s) {
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-label');
+  dot.classList.toggle('syncing', s);
+  lbl.textContent = s ? 'Synchronisation...' : 'Synchronisé';
+}
+
+function toggleInvMissing(id) {
+  invMissing[id] = !invMissing[id];
+  if (!invMissing[id]) delete invDone[id];
+  setSyncing(true);
+  saveAll();
+  setTimeout(() => setSyncing(false), 500);
+  renderInvManque();
+  updateInvBadge();
+}
+
+function toggleInvDone(id) {
+  invDone[id] = !invDone[id];
+  saveAll(); renderInvListe();
+}
+
+function filterInv() {
+  invFilter = document.getElementById('inv-search').value.toLowerCase();
+  renderInvManque();
+}
+
+function coursesTerminees() {
+  const items = Object.keys(invMissing).filter(k => invMissing[k]);
+  if (!items.length) return;
+  if (confirm('Marquer les courses comme faites ? La liste sera remise à zéro.')) {
+    items.forEach(k => { delete invMissing[k]; delete invDone[k]; });
+    saveAll(); renderInvManque(); updateInvBadge(); renderInvListe();
+    switchInvTab('manque', document.querySelectorAll('.liste-sub-tab')[0]);
+  }
+}
+
+function renderInvManque() {
+  const container = document.getElementById('inv-content');
+  container.innerHTML = '';
+  let totalMissing = 0, anyVisible = false;
+  for (const [cat, items] of Object.entries(INVENTAIRE)) {
+    const filtered = invFilter ? items.filter(i => i.toLowerCase().includes(invFilter)) : items;
+    if (!filtered.length) continue;
+    anyVisible = true;
+    const catMissing = filtered.filter(i => invMissing[cat + '::' + i]).length;
+    if (catMissing) totalMissing += catMissing;
+    const block = document.createElement('div');
+    block.className = 'inv-cat-block';
+    block.innerHTML = `<div class="inv-cat-title">${cat}${catMissing ? ` <span class="inv-cat-count">${catMissing} manquant</span>` : ''}</div><div class="items-grid"></div>`;
+    container.appendChild(block);
+    const grid = block.querySelector('.items-grid');
+    filtered.forEach(item => {
+      const id = cat + '::' + item;
+      const isMissing = !!invMissing[id];
+      const chip = document.createElement('div');
+      chip.className = 'item-chip' + (isMissing ? ' missing' : '');
+      chip.onclick = () => toggleInvMissing(id);
+      chip.innerHTML = `<div class="chip-dot"></div><span class="chip-label">${item}</span>`;
+      grid.appendChild(chip);
+    });
+  }
+  if (!anyVisible) container.innerHTML = '<div class="empty-state">Aucun article trouvé</div>';
+  document.getElementById('inv-missing-count').textContent = totalMissing + ' manquant' + (totalMissing > 1 ? 's' : '');
+}
+
+function renderInvListe() {
+  const container = document.getElementById('inv-liste-content');
+  container.innerHTML = '';
+  const byCategory = {};
+  for (const [cat, items] of Object.entries(INVENTAIRE)) {
+    items.forEach(item => {
+      const id = cat + '::' + item;
+      if (invMissing[id]) { if (!byCategory[cat]) byCategory[cat] = []; byCategory[cat].push({ id, item }); }
+    });
+  }
+  const total = Object.values(byCategory).reduce((s, a) => s + a.length, 0);
+  const done = Object.keys(invDone).filter(k => invDone[k] && invMissing[k]).length;
+  document.getElementById('inv-progress-label').textContent = `${done} / ${total} articles`;
+  document.getElementById('inv-progress-fill').style.width = total ? Math.round(done / total * 100) + '%' : '0%';
+  if (!total) { container.innerHTML = '<div class="liste-empty"><span class="big">✓</span>Rien à acheter !<br><span style="font-size:0.82rem">Cochez ce qui manque dans l\'inventaire.</span></div>'; return; }
+  for (const [cat, catItems] of Object.entries(byCategory)) {
+    const section = document.createElement('div');
+    section.className = 'liste-cat-section';
+    section.innerHTML = `<div class="liste-cat-header">${cat}</div>`;
+    catItems.forEach(({ id, item }) => {
+      const isDone = !!invDone[id];
+      const el = document.createElement('div');
+      el.className = 'liste-item' + (isDone ? ' done' : '');
+      el.onclick = () => toggleInvDone(id);
+      el.innerHTML = `<div class="check-box">✓</div><span class="liste-label">${item}</span>`;
+      section.appendChild(el);
+    });
+    container.appendChild(section);
+  }
+}
+
+function updateInvBadge() {
+  const count = Object.values(invMissing).filter(Boolean).length;
+  const badge = document.getElementById('inv-badge');
+  badge.style.display = count > 0 ? 'inline' : 'none';
+  badge.textContent = count;
+}
+
+// ===================== SHARE =====================
+function setShareUrl() {
+  const url = window.location.href.split('?')[0];
+  document.getElementById('share-url').textContent = url;
+}
+
+function shareApp() {
+  const url = window.location.href.split('?')[0];
+  if (navigator.share) {
+    navigator.share({ title: 'NutriWeek', text: 'Suivi régime hyperprotéiné — Semaine ' + WEEK_NUM, url });
+  } else {
+    navigator.clipboard.writeText(url).then(() => alert('Lien copié !'));
+  }
+}
+
+// ===================== PWA INSTALL =====================
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); deferredPrompt = e;
+  document.getElementById('install-banner').classList.add('visible');
+});
+function installApp() {
+  if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then(() => { deferredPrompt = null; document.getElementById('install-banner').classList.remove('visible'); }); }
+}
+function dismissInstall() { document.getElementById('install-banner').classList.remove('visible'); }
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+
+window.addEventListener('storage', e => {
+  if ([KEY_INV, KEY_INV_DONE].includes(e.key)) { loadAll(); renderInvManque(); updateInvBadge(); }
+});
+
+// ===================== INIT =====================
+loadAll();
+setWeekLabel();
+setShareUrl();
+renderCourses();
+initMenuSelect();
+initPrepSelect();
+renderInvManque();
+updateInvBadge();
+</script>
+</body>
+</html>
