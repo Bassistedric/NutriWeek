@@ -202,7 +202,7 @@
     <div class="qr-card">
       <h3>Partager l'app</h3>
       <canvas id="qr-canvas"></canvas>
-      <div class="qr-url">bassistedric.github.io/NutriWeek/</div>
+      <div class="qr-url" id="qr-url"></div>
       <button class="copy-btn" onclick="copyUrl()">📋 Copier le lien</button>
     </div>
   </div>
@@ -274,7 +274,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script>
-const APP_URL = "https://bassistedric.github.io/NutriWeek/";
+const APP_URL = new URL('./', window.location.href).href;
 const WEEK = "Semaine 16";
 const DAYS = ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
 
@@ -330,8 +330,16 @@ function goHome() { goTo('home'); updateBadges(); }
 
 // QR CODE
 function generateQR() {
+  document.getElementById('qr-url').textContent = APP_URL;
   if (typeof QRCode === 'undefined') { setTimeout(generateQR, 300); return; }
-  QRCode.toCanvas(document.getElementById('qr-canvas'), APP_URL, { width: 180, margin: 2, color: { dark: '#1a1a1a', light: '#fffdf8' } });
+  QRCode.toCanvas(
+    document.getElementById('qr-canvas'),
+    APP_URL,
+    { width: 180, margin: 2, color: { dark: '#1a1a1a', light: '#fffdf8' } },
+    (err) => {
+      if (err) document.getElementById('qr-url').textContent = `Lien à partager : ${APP_URL}`;
+    }
+  );
 }
 function copyUrl() {
   navigator.clipboard.writeText(APP_URL).then(() => {
