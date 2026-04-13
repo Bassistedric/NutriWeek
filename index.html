@@ -201,8 +201,7 @@
     </div>
     <div class="qr-card">
       <h3>Partager l'app</h3>
-      <canvas id="qr-canvas" width="180" height="180" style="display:none"></canvas>
-      <img id="qr-image" alt="QR code NutriWeek" width="180" height="180" style="border-radius:8px;background:#fffdf8;padding:4px;">
+      <img id="qr-image" src="qrcode.png" alt="QR code NutriWeek" width="180" height="180" style="border-radius:8px;background:#fffdf8;padding:4px;">
       <div class="qr-url" id="qr-url"></div>
       <button class="copy-btn" onclick="copyUrl()">📋 Copier le lien</button>
     </div>
@@ -273,7 +272,6 @@
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script>
 const APP_URL = new URL('./', window.location.href).href;
 const WEEK = "Semaine 16";
@@ -332,24 +330,6 @@ function goHome() { goTo('home'); updateBadges(); }
 // QR CODE
 function generateQR() {
   document.getElementById('qr-url').textContent = APP_URL;
-  const qrCanvas = document.getElementById('qr-canvas');
-  const qrImg = document.getElementById('qr-image');
-  if (typeof QRCode !== 'undefined') {
-    QRCode.toCanvas(qrCanvas, APP_URL, { width: 180, margin: 2, color: { dark: '#1a1a1a', light: '#fffdf8' } }, (err) => {
-      if (err) {
-        qrCanvas.style.display = 'none';
-        qrImg.style.display = 'block';
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=8&data=${encodeURIComponent(APP_URL)}`;
-        return;
-      }
-      qrImg.style.display = 'none';
-      qrCanvas.style.display = 'block';
-    });
-    return;
-  }
-  qrCanvas.style.display = 'none';
-  qrImg.style.display = 'block';
-  qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=8&data=${encodeURIComponent(APP_URL)}`;
 }
 function copyUrl() {
   navigator.clipboard.writeText(APP_URL).then(() => {
