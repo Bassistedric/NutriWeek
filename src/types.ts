@@ -1,0 +1,1 @@
+export type Activity='REST'|'CARDIO'|'STRENGTH'|'WOD';export type Profile={id:string;name:string;kind:'ADULT'|'FAMILY';calories:number;protein:number};export type Meal={id:string;type:'BREAKFAST'|'LUNCH'|'SNACK'|'DINNER';title:string;subtitle:string;emoji:string;kcal:number;protein:number;minutes:number};
