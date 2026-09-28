@@ -94,3 +94,9 @@
 .removeSnack{width:25px;height:25px;border:0;border-radius:50%;background:#eee8dd;color:#7d665b;font-size:17px;cursor:pointer}
 .familyDinnerNote{margin-top:10px;background:#e7efe2;border-radius:10px;padding:8px 10px;font-size:10px;font-weight:800;color:#476056}
 @media(max-width:520px){.weekMealRow{grid-template-columns:80px 1fr auto!important}.weekMealRow>button:not(.removeSnack){display:block}.weekMealRow>button small{display:block;margin-top:3px}}
+
+.weekSelector.dated button{flex-direction:column;gap:2px;min-height:62px}
+.weekSelector.dated b{font:800 13px Inter,ui-sans-serif,system-ui,sans-serif;white-space:nowrap}
+.weekDay.today{outline:2px solid #b25f36;box-shadow:0 8px 24px #b25f3618}
+.weekDay.today .weekDayHead>div>small{color:#b25f36}
+@media(max-width:720px){.weekSelector.dated{grid-template-columns:repeat(2,1fr)}.weekSelector.dated button{min-height:58px}}
