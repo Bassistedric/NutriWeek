@@ -1,7 +1,7 @@
 name: Preview NutriWeek v2
 on:
   push:
-    branches: [refonte-v2]
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
