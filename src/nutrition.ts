@@ -11,7 +11,7 @@ export function buildDayPlan(profile:Profile,activity:Activity,library:Recipe[],
  const dinnerShare=activity==='WOD'||activity==='STRENGTH'?.34:.36;
  const dinnerScale=clamp(targetCalories*dinnerShare/macros(dinner,1).kcal,dinner.minScale,dinner.maxScale);
  const d=planned(dinner,dinnerScale),remaining=Math.max(0,targetCalories-d.kcal);
- const weights=activity==='WOD'||activity==='STRENGTH'?{BREAKFAST:.25,SNACK_AM:.10,LUNCH:.37,SNACK_PM:.28,DINNER:0}:{BREAKFAST:.28,SNACK_AM:.12,LUNCH:.40,SNACK_PM:.20,DINNER:0};
+ const weights:Record<MealType,number>=activity==='WOD'||activity==='STRENGTH'?{BREAKFAST:.25,SNACK_AM:.10,LUNCH:.37,SNACK_PM:.28,DINNER:0}:{BREAKFAST:.28,SNACK_AM:.12,LUNCH:.40,SNACK_PM:.20,DINNER:0};
  const rest=other.map(r=>planned(r,clamp(remaining*weights[r.type]/macros(r,1).kcal,r.minScale,r.maxScale)));
  const meals=[...rest,d],totalCalories=meals.reduce((s,m)=>s+m.kcal,0),totalProtein=meals.reduce((s,m)=>s+m.protein,0);
  return{targetCalories,targetProtein,meals,totalCalories,totalProtein};
