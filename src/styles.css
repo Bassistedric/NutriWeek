@@ -77,3 +77,9 @@
  .trackingForm{grid-template-columns:1fr}
  .shoppingCount{min-width:76px}
 }
+
+.weekSelector{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 16px}
+.weekSelector button{border:1px solid #ddd6c8;background:#fffaf0;color:#607068;border-radius:16px;padding:10px 14px;display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer}
+.weekSelector small{font-size:9px;font-weight:900;letter-spacing:.11em}.weekSelector b{font:700 23px Georgia,serif}
+.weekSelector button.active{background:#173c32;border-color:#173c32;color:white;box-shadow:0 5px 16px #17342c22}
+@media(max-width:520px){.weekSelector{gap:5px}.weekSelector button{padding:10px 5px;flex-direction:column;gap:0}.weekSelector b{font-size:20px}}
