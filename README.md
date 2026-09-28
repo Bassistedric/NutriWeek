@@ -1,122 +1,38 @@
-# NutriWeek
-la coced concept
-# 🍊 NutriWeek — Guide de déploiement
+# NutriWeek v2
 
-Application web progressive (PWA) pour le suivi du régime hyperprotéiné et la gestion des courses familiales.
+Application familiale de planification nutritionnelle adaptative.
 
----
+## Principe
 
-## 📁 Fichiers à uploader sur GitHub
+**Même cuisine, mêmes recettes, portions différentes.**
 
-| Fichier | Description |
-|---|---|
-| `index.html` | L'application complète |
-| `sw.js` | Service worker (mode hors-ligne) |
-| `manifest.webmanifest` | Config PWA (icône, nom, couleurs) |
-| `.nojekyll` | Empêche GitHub de modifier les fichiers |
-| `favicon.ico` | Icône onglet navigateur |
-| `icon-16.png` | Icône 16×16 |
-| `icon-32.png` | Icône 32×32 |
-| `icon-48.png` | Icône 48×48 |
-| `icon-96.png` | Icône header app |
-| `icon-180.png` | Apple Touch Icon (iOS) |
-| `icon-192.png` | Icône Android / PWA |
-| `icon-512.png` | Icône splash screen |
-| `icon-1024.png` | Icône haute résolution |
+NutriWeek construit une semaine réaliste autour d'un dîner commun, puis adapte petit-déjeuner, déjeuner, collations et portions aux besoins de chaque profil.
 
----
+## V2 — socle
 
-## 🚀 Déploiement pas à pas
+- React + TypeScript + Vite
+- interface responsive mobile-first
+- profils adultes + profil famille
+- objectifs kcal / protéines configurables
+- journées repos, cardio, force/haltéro et CrossFit
+- collation intégrée au budget de la journée
+- dîner commun
+- architecture prévue pour menus hebdomadaires, batch cooking, courses et suivi
 
-### Étape 1 — Créer le repository GitHub
+## Profils de démonstration
 
-1. Va sur **github.com** et connecte-toi
-2. Clique sur **"New repository"** (bouton vert en haut à droite)
-3. Nom du repo : `nutriweek` (tout en minuscules, sans espace)
-4. Laisse en **Public** (nécessaire pour GitHub Pages gratuit)
-5. Ne coche rien d'autre → clique **"Create repository"**
+- Cédric : base 2100 kcal / 165 g protéines, adaptation selon activité
+- Madame : 1450 kcal / 105 g protéines
+- Famille : portions familiales sans logique de déficit affichée
 
----
+Les cibles sont des paramètres de départ et devront être configurables dans l'application.
 
-### Étape 2 — Uploader les fichiers
+## Roadmap
 
-1. Sur la page du repo vide, clique **"uploading an existing file"**
-2. Glisse-dépose **tous les fichiers** en même temps dans la zone
-3. En bas de la page, dans "Commit changes" : laisse le message par défaut
-4. Clique **"Commit changes"**
-
-> ⚠️ Le fichier `.nojekyll` est invisible sur Windows. Assure-toi qu'il est bien uploadé (il doit apparaître dans la liste des fichiers sur GitHub).
-
----
-
-### Étape 3 — Activer GitHub Pages
-
-1. Dans le repo, clique sur **"Settings"** (onglet en haut)
-2. Dans le menu gauche, clique **"Pages"**
-3. Sous **"Source"**, sélectionne **"Deploy from a branch"**
-4. Branch : **`main`** — Dossier : **`/ (root)`**
-5. Clique **"Save"**
-6. Attends 1-2 minutes ⏳
-
----
-
-### Étape 4 — Accéder à l'app
-
-Ton app sera disponible à l'adresse :
-
-```
-https://TON-PSEUDO-GITHUB.github.io/nutriweek/
-```
-
-Remplace `TON-PSEUDO-GITHUB` par ton nom d'utilisateur GitHub.
-
-Cette URL apparaît aussi dans Settings → Pages une fois déployé.
-
----
-
-## 📲 Installer l'app sur téléphone
-
-### Sur Android (Chrome)
-1. Ouvre l'URL dans Chrome
-2. Un bandeau "Installer NutriWeek" apparaît → appuie dessus
-3. Ou : menu ⋮ → "Ajouter à l'écran d'accueil"
-
-### Sur iPhone (Safari)
-1. Ouvre l'URL dans **Safari** (pas Chrome)
-2. Appuie sur l'icône de partage 📤 en bas
-3. Sélectionne **"Sur l'écran d'accueil"**
-4. Appuie sur **"Ajouter"**
-
----
-
-## 🔗 Partager avec ta conjointe
-
-Envoie simplement l'URL par SMS ou WhatsApp. Elle peut également l'installer sur son téléphone via la même procédure.
-
-L'inventaire familial se synchronise automatiquement entre les appareils via le navigateur.
-
----
-
-## 🔄 Mise à jour chaque semaine
-
-Chaque semaine, donne ton nouvel Excel à Claude → il génère un nouveau `index.html`.
-
-Pour mettre à jour sur GitHub :
-1. Va dans le repo `nutriweek`
-2. Clique sur `index.html`
-3. Clique l'icône ✏️ (Edit)
-4. Sélectionne tout le contenu et colle le nouveau fichier
-5. Clique **"Commit changes"**
-
-L'app se met à jour automatiquement sur tous les appareils dans la minute.
-
----
-
-## ✨ Fonctionnalités
-
-| Onglet | Fonction |
-|---|---|
-| 🛒 Courses | Liste hebdomadaire avec cases à cocher (persistées) |
-| 🍽 Menu | Menu du jour avec navigation par jour |
-| 👨‍🍳 Prépa | Tâches de préparation par jour |
-| 📦 Inventaire | Liste permanente familiale → génère la liste de courses |
+1. Moteur de besoins et portions
+2. Bibliothèque de recettes illustrées
+3. Planificateur semaine et présence au dîner
+4. Batch cooking
+5. Liste de courses cochable
+6. Suivi poids / tour de taille / faim / énergie / entraînement
+7. PWA et persistance locale
