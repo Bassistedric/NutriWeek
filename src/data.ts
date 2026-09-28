@@ -2,7 +2,7 @@ import type{Profile,Recipe}from'./types';
 const bonus={REST:0,CARDIO:100,STRENGTH:200,WOD:250} as const;
 export const profiles:Profile[]=[
 {id:'cedric',name:'Cédric',kind:'ADULT',baseCalories:2000,proteinTarget:165,activityBonus:bonus,heightCm:170,weightKg:90,targetWeightKg:80},
-{id:'madame',name:'Madame',kind:'ADULT',baseCalories:1450,proteinTarget:105,activityBonus:{REST:0,CARDIO:80,STRENGTH:120,WOD:160}},
+{id:'madame',name:'Corinne',kind:'ADULT',baseCalories:1450,proteinTarget:105,activityBonus:{REST:0,CARDIO:80,STRENGTH:120,WOD:160}},
 {id:'family',name:'Famille',kind:'FAMILY',baseCalories:0,proteinTarget:0,activityBonus:{REST:0,CARDIO:0,STRENGTH:0,WOD:0}}
 ];
 export const recipes:Recipe[]=[
