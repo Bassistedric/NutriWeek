@@ -3,7 +3,7 @@ const bonus={REST:0,CARDIO:100,STRENGTH:200,WOD:250} as const;
 export const profiles:Profile[]=[
 {id:'cedric',name:'Cédric',kind:'ADULT',baseCalories:2000,proteinTarget:165,activityBonus:bonus,heightCm:170,weightKg:90,targetWeightKg:80},
 {id:'madame',name:'Corinne',kind:'ADULT',baseCalories:1450,proteinTarget:105,activityBonus:{REST:0,CARDIO:80,STRENGTH:120,WOD:160}},
-{id:'family',name:'Famille',kind:'FAMILY',baseCalories:0,proteinTarget:0,activityBonus:{REST:0,CARDIO:0,STRENGTH:0,WOD:0}}
+{id:'family',name:'Famille',kind:'FAMILY',baseCalories:0,proteinTarget:0,activityBonus:{REST:0,CARDIO:0,STRENGTH:0,WOD:0},familyMembers:[{id:'girl14',name:'Fille 14 ans',age:14,activityLabel:'Active · CrossFit 2×/sem. + gym & natation',portionFactor:1},{id:'girl17',name:'Fille 17 ans',age:17,activityLabel:'Active · course 2×1 h/sem. + gym & natation',portionFactor:1}]}
 ];
 export const recipes:Recipe[]=[
 {id:'eggs',type:'BREAKFAST',title:'Œufs, jambon & tartine',subtitle:'Tomates à l’ail · pain complet',emoji:'🍳',minutes:10,minScale:.75,maxScale:1.45,tags:['salé','rapide'],steps:['Faire griller le pain.','Poêler les tomates avec l’ail et l’huile.','Cuire les œufs à ton goût et réchauffer le jambon.','Dresser le tout et assaisonner.'],ingredients:[{name:'Œufs',amount:2,unit:'piece',kcal:144,protein:13,scalable:false},{name:'Jambon',amount:60,unit:'g',kcal:70,protein:12},{name:'Pain complet',amount:60,unit:'g',kcal:150,protein:6},{name:'Tomates',amount:150,unit:'g',kcal:27,protein:1},{name:"Huile d'olive",amount:5,unit:'g',kcal:45,protein:0}]},
