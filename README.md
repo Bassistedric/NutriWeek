@@ -36,3 +36,5 @@ Les cibles sont des paramètres de départ et devront être configurables dans l
 5. Liste de courses cochable
 6. Suivi poids / tour de taille / faim / énergie / entraînement
 7. PWA et persistance locale
+
+<!-- Pages deployment: GitHub Actions / NutriWeek v2 -->
